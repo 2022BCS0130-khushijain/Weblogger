@@ -1,0 +1,43 @@
+# One command starts everything:   docker compose up --build
+# Then open http://localhost:3000
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: bloguser
+      POSTGRES_PASSWORD: blogpass
+      POSTGRES_DB: blogdb
+    volumes: [pgdata:/var/lib/postgresql/data]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U bloguser -d blogdb"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+
+  redis:
+    image: redis:7-alpine
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+
+  app:
+    build: .
+    ports: ["3000:3000"]
+    depends_on:
+      db: { condition: service_healthy }
+      redis: { condition: service_healthy }
+    environment:
+      PORT: 3000
+      # "development" turns on the developer login + shows OTPs on screen. Use "production" when deploying for real
+      # (and then also set a long random JWT_SECRET and your GOOGLE_CLIENT_ID).
+      NODE_ENV: development
+      PUBLIC_URL: http://localhost:3000
+      DATABASE_URL: postgres://bloguser:blogpass@db:5432/blogdb
+      REDIS_URL: redis://redis:6379
+      JWT_SECRET: change-me-to-a-long-random-string
+      GOOGLE_CLIENT_ID: ""
+
+volumes:
+  pgdata:
