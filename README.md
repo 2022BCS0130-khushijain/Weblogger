@@ -1,4 +1,4 @@
-# ✒️ Inkwell — a blogging platform (backend-heavy portfolio project)
+# ✒️ Inkwell — a blogging platform 
 
 Inkwell is a small blogging **platform**, not just a blog site. People log in, write blogs (drafts, private, public),
 like / comment / bookmark them, search **inside** blog text, follow authors, chat live under a blog, and get notifications.
